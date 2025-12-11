@@ -60,27 +60,29 @@ Integrate seamlessly with the MCP UI Client
 
 The server does not send HTML—it sends instructions that the frontend renders through the Remote DOM layer.
 
-**UI Resource**
+**Create UI Resource**
 
 The primary payload returned from the server to the client is the UIResource:
 
-	interface UIResource {
-	  type: 'resource';
-	  resource: {
-	    uri: string;       // e.g., ui://component/id
-	    mimeType: 'application/vnd.mcp-ui.remote-dom'; //application/vnd.mcp-ui.remote-dom for remote-dom content (Javascript)
-	    text?: string;      // Inline remote-dom script
-	    blob?: string;      // Base64-encoded remote-dom script
-	  };
-	}
+	createUIResource({
+      uri: `ui://cart/${Date.now()}`,
+      content: {
+        type: 'remoteDom',
+        script: script,
+        framework: 'react'
+      },
+      encoding: 'text'
+    });
 	
 `uri`: Unique identifier for caching and routing
 
-`ui://…` — UI resources (rendering method determined by mimeType)
+`type`: UI resources type
 
-`mimeType`: application/vnd.mcp-ui.remote-dom for remote-dom content (Javascript)
+`script`: Remote dom script + data as JavaScript variables
 
-`text vs. blob`: Choose text for simple strings; use blob for larger or encoded content.
+`framework`: Custom component UI library developed in React
+
+`encoding`: 'text' or 'blob' if encoded content
 
 
 
