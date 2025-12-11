@@ -67,13 +67,13 @@ OpenAI is used in two main ways:
 
 OpenAI synthesizes realistic product datasets:
 
-name
-description
-price
-currency
-imageUrl
-tags
-These products are inserted into Postgres & Chroma so future searches use semantic retrieval.
+	`name`
+	`description`
+	`price`
+	`currency`
+	`imageUrl`
+	`tags`
+These products are inserted into Postgres so future searches use semantic retrieval.
 
 **B. Remote DOM UI generation**
 
