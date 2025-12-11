@@ -6,10 +6,10 @@ import cors from 'cors';
 import { z } from 'zod';
 import { createUIResource } from '@mcp-ui/server';
 // import { buildRemoteDomScript, generateRemoteDomScriptFromLlm } from './ollamaLLM/llm_local';
-import {
-  indexAllProducts,
-  deleteCollection
-} from "./openaiLLM/vectorstore_chroma";
+// import {
+//   indexAllProducts,
+//   deleteCollection
+// } from "./openaiLLM/vectorstore_chroma";
 import { generateCartPageRemoteDomFromLlm, generateRemoteDomScriptFromLlm, prepareFinalCartScript, prepareFinalScript } from './openaiLLM/llm';
 import {getCachedRemoteDomScript, saveRemoteDomScript} from './persistent/remoteDomCache';
 import { addToCart, addToWishlist, getCart, getWishlist, removeFromCart, removeFromWishlist } from './persistent/cartRepo';
@@ -24,35 +24,35 @@ const SearchBody = z.object({
   prompt: z.string().min(1)
 });
 
-app.get('/clear/collections', async (req, res) => {
-   try {
-    await deleteCollection();
-    console.log("Chroma DB collection deleted successfully");
-    res.json({
-      'message': 'Chroma DB collection deleted successfully'
-    });
-  } catch (err) {
-    console.error("Failed to deleted Chroma collection:", err);
-    res.json({
-      'error': 'Chroma DB collection delete failed.'
-    });
-  }
-});
+// app.get('/clear/collections', async (req, res) => {
+//    try {
+//     await deleteCollection();
+//     console.log("Chroma DB collection deleted successfully");
+//     res.json({
+//       'message': 'Chroma DB collection deleted successfully'
+//     });
+//   } catch (err) {
+//     console.error("Failed to deleted Chroma collection:", err);
+//     res.json({
+//       'error': 'Chroma DB collection delete failed.'
+//     });
+//   }
+// });
 
-app.get('/load/collections', async (req, res) => {
-   try {
-    await indexAllProducts();
-    console.log("Chroma product index ready");
-    res.json({
-      'message': 'Chroma DB loaded successfully'
-    });
-  } catch (err) {
-    console.error("Failed to index products into Chroma:", err);
-    res.json({
-      'error': 'Chroma DB loading failed.'
-    });
-  }
-});
+// app.get('/load/collections', async (req, res) => {
+//    try {
+//     await indexAllProducts();
+//     console.log("Chroma product index ready");
+//     res.json({
+//       'message': 'Chroma DB loaded successfully'
+//     });
+//   } catch (err) {
+//     console.error("Failed to index products into Chroma:", err);
+//     res.json({
+//       'error': 'Chroma DB loading failed.'
+//     });
+//   }
+// });
 
 app.post('/search', async (req, res) => {
   try {
