@@ -1,11 +1,11 @@
-🧩 Architecture Overview
+**🧩 Architecture Overview**
 
 This Proof of Concept demonstrates an end-to-end AI-driven shopping experience built using MCP UI, OpenAI, and a Remote DOM rendering pipeline.
 The system dynamically generates UI layouts and product results using an LLM, then renders them safely inside a React application.
 
 
-Core Components
-1. MCP UI Client (@mcp-ui/client)
+**Core Components**
+**1. MCP UI Client (@mcp-ui/client)**
 
 The MCP UI Client is used inside the React application to render UI that is generated dynamically by the server.
 Key features:
@@ -21,7 +21,7 @@ Handles remote events using onUIAction (e.g., addToCart, removeFromCart)
 This allows complex UI to be constructed at runtime without shipping UI code from server to client.
 
 
-2. MCP UI Server (@mcp-ui/server)
+**2. MCP UI Server (@mcp-ui/server)**
 
 The backend uses MCP UI Server utilities to create UI resources that the frontend can render.
 Responsibilities:
@@ -35,7 +35,7 @@ Integrate seamlessly with the MCP UI Client
 The server does not send HTML—it sends instructions that the frontend renders through the Remote DOM layer.
 
 
-🌐 Remote DOM
+**🌐 Remote DOM**
 
 Remote DOM is the foundation of the dynamic UI.
 Instead of sending HTML or JSX, the server (and LLM) sends a JavaScript script that executes inside a sandboxed environment and constructs a virtual DOM tree using custom elements like:
@@ -58,11 +58,11 @@ Event handlers inside the script dispatch CustomEvents, which the client maps to
 
 This enables fully generated UI layouts such as product search results, cart pages, etc.
 
-🤖 OpenAI Integration
+**🤖 OpenAI Integration**
 
 OpenAI is used in two main ways:
 
-A. Product generation
+**A. Product generation**
 
 When vector search does not return sufficient results, OpenAI synthesizes realistic product datasets:
 
@@ -80,7 +80,7 @@ tags
 
 These products are inserted into Postgres & Chroma so future searches use semantic retrieval.
 
-B. Remote DOM UI generation
+**B. Remote DOM UI generation**
 
 OpenAI generates the JavaScript Remote DOM script that describes how the UI should look for:
 
@@ -100,7 +100,7 @@ LLM creativity → product generation
 
 deterministic business logic → cart/wishlist updates
 
-🗄️ PostgreSQL
+**🗄️ PostgreSQL**
 
 Postgres serves as the core persistent storage layer.
 Tables include:
@@ -128,7 +128,7 @@ Caches LLM-generated remote DOM scripts so the UI does not require repeated call
 Postgres ensures consistency, uniqueness, and structural integrity of the data model.
 
 
-🚀 End-to-End Flow Summary
+**🚀 End-to-End Flow Summary**
 
 User searches → React app calls /search
 
