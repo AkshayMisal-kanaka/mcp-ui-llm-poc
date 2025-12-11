@@ -8,6 +8,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
+const openaiModel = process.env.OPEN_AI_MODEL || "gpt-5-mini";
+
 export async function getProductsFromOpenAI(
   userPrompt: string,
   limit: number = 5
@@ -48,7 +50,7 @@ Rules:
 `;
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-5-mini",
+    model: openaiModel,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: systemPrompt },
@@ -190,7 +192,7 @@ Rules:
 
   // You can adapt to Responses API; using chat here
   const completion = await openai.chat.completions.create({
-    model: 'gpt-5-mini',
+    model: 'openaiModel',
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user }
@@ -352,7 +354,7 @@ IMPORTANT:
   Just create the DOM structure and event listeners as described.`;
 
   const completion = await openai.chat.completions.create({
-    model: 'gpt-5-mini',
+    model: 'openaiModel',
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt }
