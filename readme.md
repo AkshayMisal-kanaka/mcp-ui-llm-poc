@@ -5,6 +5,7 @@ The system dynamically generates UI layouts and product results using an LLM, th
 
 
 **Core Components**
+
 **1. MCP UI Client (@mcp-ui/client)**
 
 The MCP UI Client is used inside the React application to render UI that is generated dynamically by the server.
@@ -64,20 +65,14 @@ OpenAI is used in two main ways:
 
 **A. Product generation**
 
-When vector search does not return sufficient results, OpenAI synthesizes realistic product datasets:
+OpenAI synthesizes realistic product datasets:
 
 name
-
 description
-
 price
-
 currency
-
 imageUrl
-
 tags
-
 These products are inserted into Postgres & Chroma so future searches use semantic retrieval.
 
 **B. Remote DOM UI generation**
