@@ -21,6 +21,31 @@ Handles remote events using onUIAction (e.g., addToCart, removeFromCart)
 
 This allows complex UI to be constructed at runtime without shipping UI code from server to client.
 
+**Resource Renderer**
+The UI Resource is rendered in the <UIResourceRenderer /> component. It automatically detects the resource type and renders the appropriate component.
+It accepts the following props:
+
+	 	<UIResourceRenderer
+	                    key={resource.uri}
+	                    resource={resource}
+	                    onUIAction={handleToolAction}
+	                    remoteDomProps={{
+	                      library: shoppingComponentLibrary,
+	                      remoteElements: shoppingRemoteElements,
+	                    }}
+	                  />
+
+`resource`: The resource object from an MCP Tool response. It must include uri, mimeType, and content (text, blob)
+
+`onUIAction`: Optional callback for handling UI actions from the resource
+
+`remoteDomProps`: Optional props for the internal <RemoteDOMResourceRenderer>
+
+`library`: React component library for Remote DOM resources
+
+`remoteElements`: remote element definitions for Remote DOM resources.
+
+
 
 **2. MCP UI Server (@mcp-ui/server)**
 
@@ -34,6 +59,30 @@ Provide consistent encoding and metadata
 Integrate seamlessly with the MCP UI Client
 
 The server does not send HTML—it sends instructions that the frontend renders through the Remote DOM layer.
+
+**UI Resource**
+
+The primary payload returned from the server to the client is the UIResource:
+
+	interface UIResource {
+	  type: 'resource';
+	  resource: {
+	    uri: string;       // e.g., ui://component/id
+	    mimeType: 'application/vnd.mcp-ui.remote-dom'; //application/vnd.mcp-ui.remote-dom for remote-dom content (Javascript)
+	    text?: string;      // Inline remote-dom script
+	    blob?: string;      // Base64-encoded remote-dom script
+	  };
+	}
+	
+`uri`: Unique identifier for caching and routing
+
+`ui://…` — UI resources (rendering method determined by mimeType)
+
+`mimeType`: application/vnd.mcp-ui.remote-dom for remote-dom content (Javascript)
+
+`text vs. blob`: Choose text for simple strings; use blob for larger or encoded content.
+
+
 
 
 **🌐 Remote DOM**
@@ -172,19 +221,19 @@ http://localhost:8082/cart-ui
 **Postgres SQL Queries**
 
 
-	`CREATE TABLE IF NOT EXISTS remote_dom_cache (
+	CREATE TABLE IF NOT EXISTS remote_dom_cache (
 	  id SERIAL PRIMARY KEY,
 	  cache_key TEXT NOT NULL UNIQUE,     
 	  script TEXT NOT NULL,
 	  model TEXT,
 	  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-	);`
+	);
 
-	`CREATE UNIQUE INDEX IF NOT EXISTS idx_remote_dom_cache_key
-	  ON remote_dom_cache (cache_key);`
+	CREATE UNIQUE INDEX IF NOT EXISTS idx_remote_dom_cache_key
+	  ON remote_dom_cache (cache_key);
   
   
-	`CREATE TABLE IF NOT EXISTS cart_items (
+	CREATE TABLE IF NOT EXISTS cart_items (
 	  id SERIAL PRIMARY KEY,
 	  user_id TEXT NOT NULL,
 	  product_id TEXT NOT NULL,
@@ -192,26 +241,26 @@ http://localhost:8082/cart-ui
 	  qty INTEGER NOT NULL DEFAULT 1,
 	  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-	);`
+	);
 
-	`CREATE INDEX IF NOT EXISTS idx_cart_items_user_id
-	  ON cart_items (user_id);`
+	CREATE INDEX IF NOT EXISTS idx_cart_items_user_id
+	  ON cart_items (user_id);
 
 
-	`CREATE TABLE IF NOT EXISTS wishlist_items (
+	CREATE TABLE IF NOT EXISTS wishlist_items (
 	  id SERIAL PRIMARY KEY,
 	  user_id TEXT NOT NULL,
 	  product_id TEXT NOT NULL,
 	  from_prompt TEXT,
 	  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-	);`
+	);
 
-	`CREATE INDEX IF NOT EXISTS idx_wishlist_items_user_id
-	  ON wishlist_items (user_id);`
+	CREATE INDEX IF NOT EXISTS idx_wishlist_items_user_id
+	  ON wishlist_items (user_id);
   
   
   
-	`CREATE TABLE IF NOT EXISTS products (
+	CREATE TABLE IF NOT EXISTS products (
 	  id TEXT PRIMARY KEY,
 	  name TEXT NOT NULL,
 	  description TEXT,
@@ -221,26 +270,26 @@ http://localhost:8082/cart-ui
 	  tags TEXT[],
 	  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-	);`
+	);
 
 -- Link to products table (optional but recommended)
 
-	`ALTER TABLE cart_items
+	ALTER TABLE cart_items
 	  ADD CONSTRAINT fk_cart_items_product
-	  FOREIGN KEY (product_id) REFERENCES products(id);`
+	  FOREIGN KEY (product_id) REFERENCES products(id);
 
 -- Ensure one row per (user, product)
 
-	`CREATE UNIQUE INDEX IF NOT EXISTS idx_cart_items_user_product
-	  ON cart_items (user_id, product_id);`
+	CREATE UNIQUE INDEX IF NOT EXISTS idx_cart_items_user_product
+	  ON cart_items (user_id, product_id);
   
   
-	`ALTER TABLE wishlist_items
+	ALTER TABLE wishlist_items
 	  ADD CONSTRAINT wishlist_items_user_product_unique
-	  UNIQUE (user_id, product_id);  `
+	  UNIQUE (user_id, product_id);
   
 -- Link to products table (optional but recommended)
 
-	`ALTER TABLE wishlist_items
+	ALTER TABLE wishlist_items
 	  ADD CONSTRAINT fk_wishlist_items_product
-	  FOREIGN KEY (product_id) REFERENCES products(id);  `
+	  FOREIGN KEY (product_id) REFERENCES products(id);
