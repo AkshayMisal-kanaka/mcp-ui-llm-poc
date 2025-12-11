@@ -257,11 +257,13 @@ ALLOWED CUSTOM ELEMENTS (ONLY):
      - muted: "true" | "false"
    - Use for secondary / helper text, totals, and small labels.
 
-4) <shop-badge>
+4) <shop-button>
    - Attributes:
-     - text: string
-     - tone: "info" | "success" | "warning" | "danger" | "neutral"
-   - May also be used as a clickable chip (e.g., "Remove") by attaching event listeners.
+     - label: string
+     - variant: "primary"
+   - Events fired by the host React component:
+     - press
+     - click 
 
 5) <shop-img>
    - Attributes:
@@ -314,7 +316,7 @@ LAYOUT REQUIREMENTS:
          - Product name using <shop-text>.
          - A small line with unit price and qty using <shop-small-text>.
          - A small line for per-item total (price * qty) using <shop-small-text>.
-         - A <shop-badge tone="danger"> with text like "Remove" that acts as the remove control.
+         - A <shop-button> with text like "Remove" that acts as the remove control.
     - This ensures up to 5 tiles per row on wide screens.
    4) Apply the same pattern for the "Wishlist" section.   
   

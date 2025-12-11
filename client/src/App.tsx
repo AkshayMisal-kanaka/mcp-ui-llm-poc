@@ -557,7 +557,8 @@ const App: React.FC = () => {
                           </li>
                         ))}
                       </ul>
-
+                    </>
+                  )}
                       {/* NEW: See full cart button */}
                       <button
                         type="button"
@@ -577,8 +578,7 @@ const App: React.FC = () => {
                       >
                         See full cart →
                       </button>
-                    </>
-                  )}
+                    
                 </div>
 
                 {/* Wishlist card */}

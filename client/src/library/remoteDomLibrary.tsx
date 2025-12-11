@@ -14,6 +14,8 @@ export interface ShopButtonProps
   label?: string;
   variant?: ButtonVariant;
   fullWidth?: boolean;
+  onPress?: (event?: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const ShopButton = React.forwardRef<
@@ -25,6 +27,8 @@ export const ShopButton = React.forwardRef<
     variant = "primary",
     fullWidth,
     style,
+    onPress,
+    onClick,
     ...rest
   } = props;
 
@@ -78,6 +82,10 @@ export const ShopButton = React.forwardRef<
       onMouseUp={(e) => {
         e.currentTarget.style.transform = "scale(1)";
         rest.onMouseUp?.(e);
+      }}
+      onClick={(e)=>{
+        if(onPress){onPress();};
+        if(onClick){onClick(e);};
       }}
     >
       {variant === "primary" && "🛒"} {label}
