@@ -172,72 +172,75 @@ http://localhost:8082/cart-ui
 **Postgres SQL Queries**
 
 
-`CREATE TABLE IF NOT EXISTS remote_dom_cache (
-  id SERIAL PRIMARY KEY,
-  cache_key TEXT NOT NULL UNIQUE,     
-  script TEXT NOT NULL,
-  model TEXT,
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);`
+	`CREATE TABLE IF NOT EXISTS remote_dom_cache (
+	  id SERIAL PRIMARY KEY,
+	  cache_key TEXT NOT NULL UNIQUE,     
+	  script TEXT NOT NULL,
+	  model TEXT,
+	  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	);`
 
-`CREATE UNIQUE INDEX IF NOT EXISTS idx_remote_dom_cache_key
-  ON remote_dom_cache (cache_key);`
+	`CREATE UNIQUE INDEX IF NOT EXISTS idx_remote_dom_cache_key
+	  ON remote_dom_cache (cache_key);`
   
   
-`CREATE TABLE IF NOT EXISTS cart_items (
-  id SERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  product_id TEXT NOT NULL,
-  from_prompt TEXT,
-  qty INTEGER NOT NULL DEFAULT 1,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);`
+	`CREATE TABLE IF NOT EXISTS cart_items (
+	  id SERIAL PRIMARY KEY,
+	  user_id TEXT NOT NULL,
+	  product_id TEXT NOT NULL,
+	  from_prompt TEXT,
+	  qty INTEGER NOT NULL DEFAULT 1,
+	  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	);`
 
-`CREATE INDEX IF NOT EXISTS idx_cart_items_user_id
-  ON cart_items (user_id);`
+	`CREATE INDEX IF NOT EXISTS idx_cart_items_user_id
+	  ON cart_items (user_id);`
 
 
-`CREATE TABLE IF NOT EXISTS wishlist_items (
-  id SERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  product_id TEXT NOT NULL,
-  from_prompt TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);`
+	`CREATE TABLE IF NOT EXISTS wishlist_items (
+	  id SERIAL PRIMARY KEY,
+	  user_id TEXT NOT NULL,
+	  product_id TEXT NOT NULL,
+	  from_prompt TEXT,
+	  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	);`
 
-`CREATE INDEX IF NOT EXISTS idx_wishlist_items_user_id
-  ON wishlist_items (user_id);`
+	`CREATE INDEX IF NOT EXISTS idx_wishlist_items_user_id
+	  ON wishlist_items (user_id);`
   
   
   
-`CREATE TABLE IF NOT EXISTS products (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT,
-  price INTEGER NOT NULL,      
-  currency TEXT NOT NULL,
-  image_url TEXT,
-  tags TEXT[],
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);`
+	`CREATE TABLE IF NOT EXISTS products (
+	  id TEXT PRIMARY KEY,
+	  name TEXT NOT NULL,
+	  description TEXT,
+	  price INTEGER NOT NULL,      
+	  currency TEXT NOT NULL,
+	  image_url TEXT,
+	  tags TEXT[],
+	  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	);`
 
-`-- Link to products table (optional but recommended)
-ALTER TABLE cart_items
-  ADD CONSTRAINT fk_cart_items_product
-  FOREIGN KEY (product_id) REFERENCES products(id);`
+-- Link to products table (optional but recommended)
 
-`-- Ensure one row per (user, product)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_cart_items_user_product
-  ON cart_items (user_id, product_id);`
+	`ALTER TABLE cart_items
+	  ADD CONSTRAINT fk_cart_items_product
+	  FOREIGN KEY (product_id) REFERENCES products(id);`
+
+-- Ensure one row per (user, product)
+
+	`CREATE UNIQUE INDEX IF NOT EXISTS idx_cart_items_user_product
+	  ON cart_items (user_id, product_id);`
   
   
-`ALTER TABLE wishlist_items
-  ADD CONSTRAINT wishlist_items_user_product_unique
-  UNIQUE (user_id, product_id);  `
+	`ALTER TABLE wishlist_items
+	  ADD CONSTRAINT wishlist_items_user_product_unique
+	  UNIQUE (user_id, product_id);  `
   
-`-- Link to products table (optional but recommended)
-ALTER TABLE wishlist_items
-  ADD CONSTRAINT fk_wishlist_items_product
-  FOREIGN KEY (product_id) REFERENCES products(id);  `
+-- Link to products table (optional but recommended)
+
+	`ALTER TABLE wishlist_items
+	  ADD CONSTRAINT fk_wishlist_items_product
+	  FOREIGN KEY (product_id) REFERENCES products(id);  `
