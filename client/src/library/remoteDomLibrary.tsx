@@ -286,17 +286,32 @@ export const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
 ProductCard.displayName = "ProductCard";
 
 export interface ShopGridProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+  extends React.HTMLAttributes<HTMLDivElement> {
+  // how many columns to render, optional
+  columns?: number | string;
+}
 
 export const ShopGrid = React.forwardRef<HTMLDivElement, ShopGridProps>(
   (props, ref) => {
-    const { style, ...rest } = props;
+    const { style, columns, ...rest } = props;
+
+    // default: auto-fit for search page
+    let templateColumns = "repeat(auto-fit, minmax(260px, 1fr))";
+
+    if (columns != null) {
+      const n = Number(columns);
+      if (!Number.isNaN(n) && n > 0) {
+        // e.g. columns="5" => repeat(5, minmax(0, 1fr))
+        templateColumns = `repeat(${n}, minmax(0, 1fr))`;
+      }
+    }
+
     return (
       <div
         ref={ref}
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gridTemplateColumns: templateColumns,
           gap: "16px",
           marginTop: "12px",
           ...style,
@@ -307,6 +322,179 @@ export const ShopGrid = React.forwardRef<HTMLDivElement, ShopGridProps>(
   }
 );
 ShopGrid.displayName = "ShopGrid";
+
+
+export interface ShopBadgeProps
+  extends React.HTMLAttributes<HTMLSpanElement> {
+  text?: string;
+  tone?: "info" | "success" | "warning" | "danger" | "neutral";
+}
+
+export const ShopBadge = React.forwardRef<HTMLSpanElement, ShopBadgeProps>(
+  (props, ref) => {
+    const { text, tone = "info", style, ...rest } = props;
+
+    const base: React.CSSProperties = {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "3px 9px",
+      borderRadius: 999,
+      fontSize: 11,
+      fontWeight: 600,
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+      whiteSpace: "nowrap",
+      ...style,
+    };
+
+    const tones: Record<NonNullable<ShopBadgeProps["tone"]>, React.CSSProperties> =
+      {
+        info: {
+          background: "rgba(59,130,246,0.1)",
+          color: "#1d4ed8",
+        },
+        success: {
+          background: "rgba(22,163,74,0.12)",
+          color: "#15803d",
+        },
+        warning: {
+          background: "rgba(234,179,8,0.12)",
+          color: "#a16207",
+        },
+        danger: {
+          background: "rgba(239,68,68,0.12)",
+          color: "#b91c1c",
+        },
+        neutral: {
+          background: "rgba(107,114,128,0.12)",
+          color: "#374151",
+        },
+      };
+
+    return (
+      <span ref={ref} style={{ ...base, ...tones[tone] }} {...rest}>
+        {text}
+      </span>
+    );
+  }
+);
+ShopBadge.displayName = "ShopBadge";
+
+export interface ShopSmallTextProps
+  extends React.HTMLAttributes<HTMLSpanElement> {
+  content?: string;
+  muted?: boolean;
+}
+
+export const ShopSmallText = React.forwardRef<
+  HTMLSpanElement,
+  ShopSmallTextProps
+>((props, ref) => {
+  const { content, muted = true, style, ...rest } = props;
+  return (
+    <span
+      ref={ref}
+      style={{
+        fontSize: 11,
+        color: muted ? "#9ca3af" : "#4b5563",
+        ...style,
+      }}
+      {...rest}
+    >
+      {content}
+    </span>
+  );
+});
+ShopSmallText.displayName = "ShopSmallText";
+
+export interface ShopImageProps
+  extends React.ImgHTMLAttributes<HTMLImageElement> {
+  src?: string;
+  alt?: string;
+  rounded?: boolean;
+}
+
+export const ShopImage = React.forwardRef<HTMLImageElement, ShopImageProps>(
+  (props, ref) => {
+    const { src, alt, rounded = true, style, ...rest } = props;
+    return (
+      <img
+        ref={ref}
+        src={src}
+        alt={alt}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          borderRadius: rounded ? 16 : 0,
+          display: "block",
+          ...style,
+        }}
+        {...rest}
+      />
+    );
+  }
+);
+ShopImage.displayName = "ShopImage";
+
+export interface ShopCardProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "outline" | "soft";
+}
+
+export const ShopCard = React.forwardRef<HTMLDivElement, ShopCardProps>(
+  (props, ref) => {
+    const { variant = "default", style, children, ...rest } = props;
+
+    const base: React.CSSProperties = {
+      borderRadius: 20,
+      padding: 16,
+      backgroundColor: "#ffffff",
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      transition: "box-shadow 0.12s ease, transform 0.08s ease, border-color 0.12s ease",
+      cursor: "default",
+      ...style,
+    };
+
+    const variants: Record<NonNullable<ShopCardProps["variant"]>, React.CSSProperties> =
+      {
+        default: {
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 10px 24px rgba(15, 23, 42, 0.10)",
+        },
+        outline: {
+          border: "1px solid #d1d5db",
+          boxShadow: "none",
+        },
+        soft: {
+          border: "1px solid rgba(148, 163, 184, 0.35)",
+          background:
+            "radial-gradient(circle at top left, #eff6ff, #ffffff 55%)",
+          boxShadow: "0 12px 30px rgba(15, 23, 42, 0.16)",
+        },
+      };
+
+    return (
+      <div
+        ref={ref}
+        style={{ ...base, ...variants[variant] }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "translateY(-1px)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+        }}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+ShopCard.displayName = "ShopCard";
 
 /* ------------ Remote wrappers (ComponentType<Record<string, unknown>>) ------------ */
 
@@ -409,11 +597,99 @@ ProductCardRemote.displayName = "ProductCardRemote";
 
 const ShopGridRemote = React.forwardRef<HTMLDivElement, RemoteProps>(
   (raw, ref) => {
-    const rest = raw as unknown as ShopGridProps;
-    return <ShopGrid ref={ref} {...rest} />;
+    const { columns, ...rest } =
+      (raw as unknown as Partial<ShopGridProps>) as ShopGridProps;
+
+    return (
+      <ShopGrid
+        ref={ref}
+        columns={columns}
+        {...(rest as any)}
+      />
+    );
   }
 );
 ShopGridRemote.displayName = "ShopGridRemote";
+
+
+
+const ShopBadgeRemote = React.forwardRef<HTMLSpanElement, RemoteProps>(
+  (raw, ref) => {
+    const { text, tone, ...rest } =
+      raw as unknown as Partial<ShopBadgeProps> &
+        React.HTMLAttributes<HTMLSpanElement>;
+
+    return (
+      <ShopBadge
+        ref={ref}
+        text={text != null ? String(text) : undefined}
+        tone={(tone as ShopBadgeProps["tone"]) ?? "info"}
+        {...(rest as any)}
+      />
+    );
+  }
+);
+ShopBadgeRemote.displayName = "ShopBadgeRemote";
+
+const ShopSmallTextRemote = React.forwardRef<HTMLSpanElement, RemoteProps>(
+  (raw, ref) => {
+    const { content, muted, ...rest } =
+      raw as unknown as Partial<ShopSmallTextProps> &
+        React.HTMLAttributes<HTMLSpanElement>;
+
+    return (
+      <ShopSmallText
+        ref={ref}
+        content={content != null ? String(content) : undefined}
+        muted={muted === undefined ? true : Boolean(muted)}
+        {...(rest as any)}
+      />
+    );
+  }
+);
+ShopSmallTextRemote.displayName = "ShopSmallTextRemote";
+
+const ShopImageRemote = React.forwardRef<HTMLImageElement, RemoteProps>(
+  (raw, ref) => {
+    const {
+      src,
+      alt,
+      rounded,
+      children,
+      dangerouslySetInnerHTML,
+      ...rest
+    } = raw as unknown as Partial<ShopImageProps> &
+      React.ImgHTMLAttributes<HTMLImageElement>;
+
+    return (
+      <ShopImage
+        ref={ref}
+        src={src != null ? String(src) : undefined}
+        alt={alt != null ? String(alt) : undefined}
+        rounded={rounded === undefined ? true : Boolean(rounded)}
+        {...(rest as any)}   
+      />
+    );
+  }
+);
+ShopImageRemote.displayName = "ShopImageRemote";
+
+const ShopCardRemote = React.forwardRef<HTMLDivElement, RemoteProps>(
+  (raw, ref) => {
+    const { variant, ...rest } =
+      raw as unknown as Partial<ShopCardProps> &
+        React.HTMLAttributes<HTMLDivElement>;
+
+    return (
+      <ShopCard
+        ref={ref}
+        variant={(variant as ShopCardProps["variant"]) ?? "default"}
+        {...(rest as any)}
+      />
+    );
+  }
+);
+ShopCardRemote.displayName = "ShopCardRemote";
 
 /* ------------ ComponentLibrary & RemoteElementConfiguration[] ------------ */
 
@@ -462,7 +738,45 @@ export const shoppingComponentLibrary: ComponentLibrary = {
     {
       tagName: "shop-grid",
       component: ShopGridRemote,
-      propMapping: {},
+      propMapping: {
+        columns: "columns"
+      },
+      eventMapping: {},
+    },
+    {
+      tagName: "shop-badge",
+      component: ShopBadgeRemote,
+      propMapping: {
+        text: "text",
+        tone: "tone",
+      },
+      eventMapping: {},
+    },
+    {
+      tagName: "shop-small-text",
+      component: ShopSmallTextRemote,
+      propMapping: {
+        content: "content",
+        muted: "muted",
+      },
+      eventMapping: {},
+    },
+    {
+      tagName: "shop-img",
+      component: ShopImageRemote,
+      propMapping: {
+        src: "src",
+        alt: "alt",
+        rounded: "rounded",
+      },
+      eventMapping: {},
+    },
+    {
+      tagName: "shop-card",
+      component: ShopCardRemote,
+      propMapping: {
+        variant: "variant",
+      },
       eventMapping: {},
     },
   ],
@@ -486,7 +800,27 @@ export const shoppingRemoteElements: RemoteElementConfiguration[] = [
   },
   {
     tagName: "shop-grid",
-    remoteAttributes: [],
+    remoteAttributes: ["columns"],
     remoteEvents: []
-  }
+  },
+   {
+    tagName: "shop-badge",
+    remoteAttributes: ["text", "tone"],
+    remoteEvents: [],
+  },
+  {
+    tagName: "shop-small-text",
+    remoteAttributes: ["content", "muted"],
+    remoteEvents: [],
+  },
+  {
+    tagName: "shop-img",
+    remoteAttributes: ["src", "alt", "rounded"],
+    remoteEvents: [],
+  },
+  {
+    tagName: "shop-card",
+    remoteAttributes: ["variant"],
+    remoteEvents: [],
+  },
 ];
