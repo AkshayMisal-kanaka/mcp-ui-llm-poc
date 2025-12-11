@@ -5,11 +5,6 @@ import express from 'express';
 import cors from 'cors';
 import { z } from 'zod';
 import { createUIResource } from '@mcp-ui/server';
-// import { buildRemoteDomScript, generateRemoteDomScriptFromLlm } from './ollamaLLM/llm_local';
-// import {
-//   indexAllProducts,
-//   deleteCollection
-// } from "./openaiLLM/vectorstore_chroma";
 import { generateCartPageRemoteDomFromLlm, generateRemoteDomScriptFromLlm, prepareFinalCartScript, prepareFinalScript } from './openaiLLM/llm';
 import {getCachedRemoteDomScript, saveRemoteDomScript} from './persistent/remoteDomCache';
 import { addToCart, addToWishlist, getCart, getWishlist, removeFromCart, removeFromWishlist } from './persistent/cartRepo';
@@ -24,48 +19,17 @@ const SearchBody = z.object({
   prompt: z.string().min(1)
 });
 
-// app.get('/clear/collections', async (req, res) => {
-//    try {
-//     await deleteCollection();
-//     console.log("Chroma DB collection deleted successfully");
-//     res.json({
-//       'message': 'Chroma DB collection deleted successfully'
-//     });
-//   } catch (err) {
-//     console.error("Failed to deleted Chroma collection:", err);
-//     res.json({
-//       'error': 'Chroma DB collection delete failed.'
-//     });
-//   }
-// });
-
-// app.get('/load/collections', async (req, res) => {
-//    try {
-//     await indexAllProducts();
-//     console.log("Chroma product index ready");
-//     res.json({
-//       'message': 'Chroma DB loaded successfully'
-//     });
-//   } catch (err) {
-//     console.error("Failed to index products into Chroma:", err);
-//     res.json({
-//       'error': 'Chroma DB loading failed.'
-//     });
-//   }
-// });
+const openaiModel = process.env.OPEN_AI_MODEL || "gpt-5-mini";
 
 app.post('/search', async (req, res) => {
   try {
     const { prompt } = SearchBody.parse(req.body);
     console.log('prompt: ', prompt);
 
-    // // Step 1: vector search for relevant products
-    // const products = await semanticSearchProducts(prompt, 5);
-
     // 1) Ask OpenAI for realistic products (no vector store)
     const products: Product[] = await searchProductsWithVectorFallback(prompt, 5);
 
-    console.log('search products: ', products);
+    console.log('search products: ', products.length);
 
     const CACHE_KEY = "searchProducts"; 
 
@@ -85,7 +49,7 @@ app.post('/search', async (req, res) => {
         await saveRemoteDomScript({
           cache_key: CACHE_KEY,
           script: remoteDomScript,
-          model: "gpt-5-mini",
+          model: openaiModel,
         });
     }
 
