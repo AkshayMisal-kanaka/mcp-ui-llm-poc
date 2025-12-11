@@ -41,17 +41,17 @@ The server does not send HTML—it sends instructions that the frontend renders 
 Remote DOM is the foundation of the dynamic UI.
 Instead of sending HTML or JSX, the server (and LLM) sends a JavaScript script that executes inside a sandboxed environment and constructs a virtual DOM tree using custom elements like:
 
-<shop-card>
+`<shop-card>`
 
-<shop-text>
+`<shop-text>`
 
-<shop-small-text>
+`<shop-small-text>`
 
-<shop-img>
+`<shop-img>`
 
-<shop-badge>
+`<shop-badge>`
 
-<shop-grid>
+`<shop-grid>`
 
 Each element corresponds to a React component implemented in a Remote DOM Component Library.
 
